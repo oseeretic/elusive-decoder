@@ -4,16 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ELUSIVE DECODER</title>
+    <!-- Подключаем стильный футуристичный шрифт для заголовков и кнопок -->
+    <link href="https://googleapis.com" rel="stylesheet">
     <style>
-        /* 1. Базовые настройки и адаптивный задний фон */
+        /* 1. Адаптивный задний фон */
         body {
-            background-image: url('input_file_0.png');
+            background-image: url('input_file_0.png'); /* Переименуйте картинку в input_file_0.png */
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             margin: 0;
             padding: 0;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Arial', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -21,96 +23,118 @@
             box-sizing: border-box;
         }
 
-        /* 2. Минималистичная плашка криптомодуля в цветах общей композиции */
+        /* 2. Главная панель криптомодуля */
         .crypto-panel {
-            background-color: rgba(42, 45, 50, 0.88); /* Темно-стальной тон из фона с прозрачностью */
-            border: 1px solid rgba(226, 228, 231, 0.25); /* Тонкая рамка вместо бирюзовой */
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
-            border-radius: 4px;
-            padding: 30px;
+            background-color: rgba(30, 32, 36, 0.92); /* Глубокий темный тон */
+            border: 1px solid rgba(226, 228, 231, 0.15);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7);
+            border-radius: 16px;
+            padding: 35px;
             width: 100%;
             max-width: 650px;
             text-align: center;
         }
 
-        /* Заголовок модуля */
+        /* Заголовок в новом шрифте Orbitron */
         .crypto-panel h1 {
-            color: #e2e4e7; /* Светлый металлик */
-            font-size: 24px;
-            letter-spacing: 3px;
+            font-family: 'Orbitron', sans-serif;
+            color: #e2e4e7;
+            font-size: 26px;
+            letter-spacing: 4px;
             margin-top: 0;
-            margin-bottom: 25px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.7);
         }
 
-        /* 3. Поле ввода, расширенное под любое количество символов */
+        /* 3. Блок инструкции для пользователя */
+        .instruction-box {
+            background-color: rgba(182, 54, 38, 0.08);
+            border: 1px dashed rgba(182, 54, 38, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            text-align: left;
+            font-size: 13px;
+            color: rgba(226, 228, 231, 0.8);
+            line-height: 1.5;
+        }
+        .instruction-box strong {
+            color: #b63626;
+        }
+
+        /* 4. Окно ввода со скругленными краями */
         .input-area {
             width: 100%;
-            height: 120px;
-            background-color: rgba(20, 21, 23, 0.75); /* Глубокий темный фон для контраста знаков */
-            border: 1px solid rgba(182, 54, 38, 0.4); /* Ржаво-красный контур поля */
-            border-radius: 2px;
+            height: 110px;
+            background-color: rgba(15, 16, 18, 0.85);
+            border: 1px solid rgba(182, 54, 38, 0.4);
+            border-radius: 12px; /* Красивые скругленные края */
             color: #ffffff;
+            font-family: 'Courier New', monospace;
             font-size: 18px;
-            padding: 12px;
+            padding: 15px;
             box-sizing: border-box;
             resize: none;
             outline: none;
             letter-spacing: 2px;
+            transition: border-color 0.3s ease;
         }
 
-        .input-area::placeholder {
-            color: rgba(226, 228, 231, 0.4);
-            font-size: 14px;
+        .input-area:focus {
+            border-color: #b63626;
         }
 
-        /* 4. Акцентная кнопка запуска дешифрования */
+        /* 5. Кнопка действия в шрифте Orbitron */
         .btn-decrypt {
-            background-color: #b63626; /* Ржаво-красный цвет, взятый с квадрата на фоне */
+            font-family: 'Orbitron', sans-serif;
+            background-color: #b63626;
             color: #ffffff;
             border: none;
-            border-radius: 2px;
-            padding: 14px 28px;
-            font-size: 14px;
-            font-weight: bold;
+            border-radius: 8px;
+            padding: 16px 30px;
+            font-size: 13px;
+            font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
             margin-top: 20px;
             width: 100%;
             transition: background-color 0.2s ease, transform 0.1s ease;
             cursor: pointer;
+            box-shadow: 0 4px 15px rgba(182, 54, 38, 0.2);
         }
 
         .btn-decrypt:hover {
-            background-color: #d13e2b; /* Высветление при наведении */
+            background-color: #d13e2b;
+            box-shadow: 0 4px 20px rgba(209, 62, 43, 0.4);
         }
 
         .btn-decrypt:active {
-            transform: scale(0.99);
+            transform: scale(0.98);
         }
 
-        /* 5. Блок вывода расшифрованного латинского текста */
+        /* 6. Блок вывода результата */
         .output-panel {
             margin-top: 25px;
-            padding: 15px;
-            background-color: rgba(15, 16, 18, 0.9);
-            border-left: 3px solid #b63626;
+            padding: 18px;
+            background-color: rgba(10, 11, 12, 0.95);
+            border-left: 4px solid #b63626;
+            border-radius: 4px;
             text-align: left;
-            display: none; /* Появляется только после клика */
+            display: none;
         }
 
         .output-label {
+            font-family: 'Orbitron', sans-serif;
             color: #b63626;
             font-size: 11px;
-            text-transform: uppercase;
-            margin-bottom: 5px;
             letter-spacing: 1px;
+            margin-bottom: 8px;
         }
 
         .output-text {
             color: #ffffff;
-            font-size: 16px;
-            line-height: 1.5;
+            font-size: 18px;
+            letter-spacing: 1px;
             word-wrap: break-word;
         }
     </style>
@@ -120,33 +144,29 @@
     <div class="crypto-panel">
         <h1>ELUSIVE DECODER</h1>
         
-        <!-- Окно ввода кодов/символов (увеличенного размера) -->
-        <textarea id="codeSource" class="input-area" placeholder="ENTER DIGITAL CODE HERE..."></textarea>
+        <!-- Блок автоматической инструкции -->
+        <div class="instruction-box">
+            <strong>ИНСТРУКЦИЯ КРИПТОАНАЛИЗА:</strong><br>
+            Вводите номера букв строго через <strong>пробел</strong>. Чтобы обозначить окончание слова и начать следующее, используйте знак косой черты <strong>/ (слэш)</strong>. 
+        </div>
         
-        <!-- Кнопка действия в новом стиле -->
+        <!-- Окно ввода со скругленными краями -->
+        <textarea id="codeSource" class="input-area" placeholder="Например: 20 1 14 20 21 13 / 5 22 1..."></textarea>
+        
+        <!-- Кнопка запуска -->
         <button class="btn-decrypt" onclick="processLatinDecryption()">DECRYPT BY LINGUISTIC ANALYSIS</button>
         
-        <!-- Окно результата -->
+        <!-- Результат дешифровки -->
         <div id="resultBlock" class="output-panel">
-            <div class="output-label">Latin Translation:</div>
+            <div class="output-label">SYSTEM DECRYPTION SUCCESSFUL:</div>
             <div id="outputText" class="output-text"></div>
         </div>
     </div>
 
     <script>
-        /**
-         * Карта посимвольного маппинга (Векторный декодер латыни).
-         * Сюда вы забиваете ID ваших векторных символов или их цифровые коды.
-         * Код сопоставляет их напрямую, исключая любые лингвистические баги библиотек.
-         */
-        const LATIN_DECODER_MAP = {
-            // Пример цифровой кодировки для вашей фразы:
-            // "tantum evadere volo invenire non possum prodidi me"
-            "t": "t", "a": "a", "n": "n", "u": "u", "m": "m",
-            "e": "e", "v": "v", "d": "d", "r": "r", "o": "o",
-            "l": "l", "i": "i", "s": "s", "p": "p", "me": "me"
-            // Сюда можно добавить любые кастомные ID знаков, например: "sym1": "t", "sym2": "a"
-        };
+        // Официальный латинский алфавит (A=1, B=2, C=3 ... Z=23, без J, U, W по классике)
+        // Для удобства добавлена стандартная кодировка, где каждая цифра — это позиция буквы
+        const alphabet = ["", "a", "b", "c", "d", "e", "f", "g", "h", "i", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "v", "x", "y", "z"];
 
         function processLatinDecryption() {
             const inputData = document.getElementById('codeSource').value.trim();
@@ -154,18 +174,39 @@
             const resultBlock = document.getElementById('resultBlock');
 
             if (!inputData) {
-                alert("Please enter data to decrypt.");
+                alert("Введите цифровой шифр для анализа.");
                 return;
             }
 
-            // Прямое декодирование строки без привлечения сторонних словарей
-            // Если в поле ввода есть готовый латинский массив, он стабилизируется и выводится.
-            let decryptedResult = inputData.toLowerCase();
+            // Разбираем входящую строку по словам с помощью слэша "/"
+            let words = inputData.split('/');
+            let decryptedWords = [];
 
-            // Эмуляция глубинного разбора для интерфейса квеста
-            outputText.innerHTML = `<strong>${decryptedResult}</strong>`;
-            
-            // Плавное отображение окна результата
+            for (let i = 0; i < words.length; i++) {
+                // Разбираем каждое слово по номерам букв через пробел
+                let letterCodes = words[i].trim().split(/\s+/);
+                let currentWord = "";
+
+                for (let j = 0; j < letterCodes.length; j++) {
+                    let code = parseInt(letterCodes[j], 10);
+                    // Проверяем, существует ли буква с таким номером в алфавите
+                    if (code >= 1 && code < alphabet.length) {
+                        currentWord += alphabet[code];
+                    } else if (letterCodes[j] !== "") {
+                        // Если ввели саму букву или неизвестный символ, оставляем как есть
+                        currentWord += letterCodes[j];
+                    }
+                }
+                if (currentWord) {
+                    decryptedWords.push(currentWord);
+                }
+            }
+
+            // Собираем латинские слова обратно через пробел
+            let finalResult = decryptedWords.join(' ');
+
+            // Если игрок ввел шифр для вашей фразы, скрипт выведет её идеально
+            outputText.innerHTML = finalResult;
             resultBlock.style.display = 'block';
         }
     </script>
