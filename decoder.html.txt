@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Латинский Дешифратор</title>
+    <style>
+        :root {
+            --bg-color: #0a0e17;
+            --panel-bg: #131a26;
+            --accent-color: #00ffcc;
+            --text-color: #ffffff;
+            --muted-text: #6b7c96;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: var(--panel-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 204, 0.1);
+            max-width: 600px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--accent-color);
+            margin-top: 0;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+        }
+
+        .instructions {
+            font-size: 14px;
+            color: var(--muted-text);
+            line-height: 1.5;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.03);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border: 1px solid #334460;
+            border-radius: 8px;
+            color: #fff;
+            padding: 12px;
+            font-size: 16px;
+            font-family: monospace;
+            resize: none;
+            box-sizing: border-box;
+            transition: border 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px rgba(0, 255, 204, 0.2);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: #000;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            background-color: #00cca3;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .result-box {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+            display: none;
+        }
+
+        .result-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            color: var(--muted-text);
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+
+        #output {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #fff;
+            word-break: break-all;
+        }
+
+        .loading {
+            text-align: center;
+            color: var(--accent-color);
+            display: none;
+            font-style: italic;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Крипто-Модуль Квеста</h1>
+    <div class="instructions">
+        <strong>Инструкция:</strong> Введите цифры зашифрованного текста через <b>пробел</b>. <br>
+        Для разделения слов используйте символ косой черты <b>/</b>.<br>
+        <i>Пример: 1 2 3 / 4 5 6 1</i>
+    </div>
+
+    <textarea id="inputCode" placeholder="Введите цифровой шифр латыни сюда..."></textarea>
+    <button onclick="decryptProcess()">Расшифровать лингвистическим анализом</button>
+
+    <div class="loading" id="loader">Лингвистический анализ структуры латыни...</div>
+
+    <div class="result-box" id="resultBox">
+        <div class="result-title">Результат расшифровки:</div>
+        <div id="output"></div>
+    </div>
+</div>
+
+<script>
+// Статистическая матрица латинских биграмм (частота сочетания букв друг с другом)
+const LATIN_BIGRAMS = {
+    'UM':80, 'ER':75, 'AM':72, 'ES':70, 'EN':68, 'US':65, 'NT':63, 'TI':60, 'IS':58, 'IN':57,
+    'RE':55, 'AT':54, 'AL':52, 'OR':50, 'IT':48, 'CO':46, 'ST':45, 'ON':43, 'UR':42, 'LI':40,
+    'RA':39, 'TA':38, 'EL':37, 'RI':36, 'AN':35, 'TE':34, 'AR':33, 'OS':32, 'LE':31, 'SI':30
+};
+
+const FREQUENCY_ORDER = "EITAMUSNOCREPLGDFVHQBXYZKW";
+
+function decryptProcess() {
+    const input = document.getElementById('inputCode').value.trim();
+    if (!input) return;
+
+    const loader = document.getElementById('loader');
+    const resultBox = document.getElementById('resultBox');
+    const output = document.getElementById('output');
+
+    loader.style.display = 'block';
+    resultBox.style.display = 'none';
+
+    setTimeout(() => {
+        const decryptedText = solveSubstitution(input);
+        loader.style.display = 'none';
+        resultBox.style.display = 'block';
+        output.innerText = decryptedText;
+    }, 1200);
+}
+
+function solveSubstitution(cipherText) {
+    const tokens = cipherText.toUpperCase().split(/\s+/);
+    const counts = {};
+    
+    tokens.forEach(t => {
+        if (t !== '/') counts[t] = (counts[t] || 0) + 1;
+    });
+
+    const sortedTokens = Object.keys(counts).sort((a, b) => counts[b] - counts[a]);
+    
+    let bestKey = {};
+    sortedTokens.forEach((token, index) => {
+        bestKey[token] = FREQUENCY_ORDER[index] || '?';
+    });
+
+    let bestScore = scoreByBigrams(bestKey, tokens);
+
+    // Метод Hill Climbing по частотной матрице сочетаний букв латыни
+    for (let iteration = 0; iteration < 2000; iteration++) {
+        let testKey = { ...bestKey };
+        
+        if (sortedTokens.length > 1) {
+            let idxA = Math.floor(Math.random() * sortedTokens.length);
+            let idxB = Math.floor(Math.random() * sortedTokens.length);
+            while (idxA === idxB) idxB = Math.floor(Math.random() * sortedTokens.length);
+            
+            let tokA = sortedTokens[idxA];
+            let tokB = sortedTokens[idxB];
+            
+            let temp = testKey[tokA];
+            testKey[tokA] = testKey[tokB];
+            testKey[tokB] = temp;
+        }
+
+        let currentScore = scoreByBigrams(testKey, tokens);
+        if (currentScore > bestScore) {
+            bestScore = currentScore;
+            bestKey = { ...testKey };
+        }
+    }
+
+    return translateText(bestKey, tokens);
+}
+
+// Оценка текста по частоте стыковки латинских букв
+function scoreByBigrams(key, tokens) {
+    const text = translateText(key, tokens).replace(/\s+/g, '');
+    let score = 0;
+    for (let i = 0; i < text.length - 1; i++) {
+        let bigram = text.substr(i, 2);
+        if (LATIN_BIGRAMS[bigram]) {
+            score += LATIN_BIGRAMS[bigram];
+        }
+    }
+    return score;
+}
+
+function translateText(key, tokens) {
+    let result = [];
+    let currentWord = [];
+
+    tokens.forEach(t => {
+        if (t === '/') {
+            if (currentWord.length > 0) {
+                result.push(currentWord.join(''));
+                currentWord = [];
+            }
+        } else {
+            currentWord.push(key[t] || '?');
+        }
+    });
+    if (currentWord.length > 0) {
+        result.push(currentWord.join(''));
+    }
+    return result.join(' ');
+}
+</script>
+
+</body>
+</html>
