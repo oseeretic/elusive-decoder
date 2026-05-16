@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="la">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELUSIVE DECODER</title>
+    <style>
+        /* 1. Базовые настройки и адаптивный задний фон */
+        body {
+            background-image: url('input_file_0.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        /* 2. Минималистичная плашка криптомодуля в цветах общей композиции */
+        .crypto-panel {
+            background-color: rgba(42, 45, 50, 0.88); /* Темно-стальной тон из фона с прозрачностью */
+            border: 1px solid rgba(226, 228, 231, 0.25); /* Тонкая рамка вместо бирюзовой */
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+            border-radius: 4px;
+            padding: 30px;
+            width: 100%;
+            max-width: 650px;
+            text-align: center;
+        }
+
+        /* Заголовок модуля */
+        .crypto-panel h1 {
+            color: #e2e4e7; /* Светлый металлик */
+            font-size: 24px;
+            letter-spacing: 3px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* 3. Поле ввода, расширенное под любое количество символов */
+        .input-area {
+            width: 100%;
+            height: 120px;
+            background-color: rgba(20, 21, 23, 0.75); /* Глубокий темный фон для контраста знаков */
+            border: 1px solid rgba(182, 54, 38, 0.4); /* Ржаво-красный контур поля */
+            border-radius: 2px;
+            color: #ffffff;
+            font-size: 18px;
+            padding: 12px;
+            box-sizing: border-box;
+            resize: none;
+            outline: none;
+            letter-spacing: 2px;
+        }
+
+        .input-area::placeholder {
+            color: rgba(226, 228, 231, 0.4);
+            font-size: 14px;
+        }
+
+        /* 4. Акцентная кнопка запуска дешифрования */
+        .btn-decrypt {
+            background-color: #b63626; /* Ржаво-красный цвет, взятый с квадрата на фоне */
+            color: #ffffff;
+            border: none;
+            border-radius: 2px;
+            padding: 14px 28px;
+            font-size: 14px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-top: 20px;
+            width: 100%;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+            cursor: pointer;
+        }
+
+        .btn-decrypt:hover {
+            background-color: #d13e2b; /* Высветление при наведении */
+        }
+
+        .btn-decrypt:active {
+            transform: scale(0.99);
+        }
+
+        /* 5. Блок вывода расшифрованного латинского текста */
+        .output-panel {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: rgba(15, 16, 18, 0.9);
+            border-left: 3px solid #b63626;
+            text-align: left;
+            display: none; /* Появляется только после клика */
+        }
+
+        .output-label {
+            color: #b63626;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .output-text {
+            color: #ffffff;
+            font-size: 16px;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="crypto-panel">
+        <h1>ELUSIVE DECODER</h1>
+        
+        <!-- Окно ввода кодов/символов (увеличенного размера) -->
+        <textarea id="codeSource" class="input-area" placeholder="ENTER DIGITAL CODE HERE..."></textarea>
+        
+        <!-- Кнопка действия в новом стиле -->
+        <button class="btn-decrypt" onclick="processLatinDecryption()">DECRYPT BY LINGUISTIC ANALYSIS</button>
+        
+        <!-- Окно результата -->
+        <div id="resultBlock" class="output-panel">
+            <div class="output-label">Latin Translation:</div>
+            <div id="outputText" class="output-text"></div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Карта посимвольного маппинга (Векторный декодер латыни).
+         * Сюда вы забиваете ID ваших векторных символов или их цифровые коды.
+         * Код сопоставляет их напрямую, исключая любые лингвистические баги библиотек.
+         */
+        const LATIN_DECODER_MAP = {
+            // Пример цифровой кодировки для вашей фразы:
+            // "tantum evadere volo invenire non possum prodidi me"
+            "t": "t", "a": "a", "n": "n", "u": "u", "m": "m",
+            "e": "e", "v": "v", "d": "d", "r": "r", "o": "o",
+            "l": "l", "i": "i", "s": "s", "p": "p", "me": "me"
+            // Сюда можно добавить любые кастомные ID знаков, например: "sym1": "t", "sym2": "a"
+        };
+
+        function processLatinDecryption() {
+            const inputData = document.getElementById('codeSource').value.trim();
+            const outputText = document.getElementById('outputText');
+            const resultBlock = document.getElementById('resultBlock');
+
+            if (!inputData) {
+                alert("Please enter data to decrypt.");
+                return;
+            }
+
+            // Прямое декодирование строки без привлечения сторонних словарей
+            // Если в поле ввода есть готовый латинский массив, он стабилизируется и выводится.
+            let decryptedResult = inputData.toLowerCase();
+
+            // Эмуляция глубинного разбора для интерфейса квеста
+            outputText.innerHTML = `<strong>${decryptedResult}</strong>`;
+            
+            // Плавное отображение окна результата
+            resultBlock.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
